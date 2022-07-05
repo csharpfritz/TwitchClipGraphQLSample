@@ -35,15 +35,27 @@ public class TwitchClipClient {
 			throw new System.Exception("Client-Id not set");
 		}
 
-		var query = "{\"operationName\":\"VideoAccessToken_Clip\", "+ 
+		var query = "{" +
+			"\"operationName\":\"VideoAccessToken_Clip\", "+ 
 			$"\"variables\":{{\"slug\":\"{clipSlug}\"}}, " + 
-			"\"extensions\":{\"persistedQuery\":{ " +
-				"\"version\":1,\"sha256Hash\":\"36b89d2507fce29e5ca551df756d27c1cfe079e2609642b4390aa4c35796eb11\"}}}";
+			"\"extensions\":{" +
+				"\"persistedQuery\":{ " +
+					"\"version\":1," +
+					"\"sha256Hash\":\"36b89d2507fce29e5ca551df756d27c1cfe079e2609642b4390aa4c35796eb11\"" +
+				"}" +
+			"}" +
+		"}";
 
 		var myResponse = await _Client.PostAsync("", new StringContent(query, Encoding.UTF8, "application/json"));
+		
+		try {
+			myResponse.EnsureSuccessStatusCode();
+		} catch (HttpRequestException e) when (e.StatusCode == System.Net.HttpStatusCode.BadRequest) {
+			throw new System.Exception("Invalid Twitch Client ID");
+		}
 
 		var content = await myResponse.Content.ReadAsStringAsync();
-		return JsonSerializer.Deserialize<ClipData>(content);
+		return JsonSerializer.Deserialize<ClipData>(content)!;
 
 	}
 
@@ -67,79 +79,79 @@ public class TwitchClipClient {
 
 public class ClipData
 {
-	public Data data { get; set; }
-	public Extensions extensions { get; set; }
+	public Data data { get; set; } = new();
+	public Extensions extensions { get; set; } = new();
 }
 
 public class Data
 {
-	public User user { get; set; }
-	public Clip clip { get; set; }
+	public User user { get; set; } = new();
+	public Clip clip { get; set; } = new();
 }
 
 public class User
 {
-	public string id { get; set; }
-	public Lastbroadcast lastBroadcast { get; set; }
-	public Broadcastsettings broadcastSettings { get; set; }
-	public object self { get; set; }
-	public object hosting { get; set; }
-	public object stream { get; set; }
-	public string __typename { get; set; }
+	public string id { get; set; } = string.Empty;
+	public Lastbroadcast lastBroadcast { get; set; } = new();
+	public Broadcastsettings broadcastSettings { get; set; } = new();
+	public object self { get; set; } = new();
+	public object hosting { get; set; } = new();
+	public object stream { get; set; } = new();
+	public string __typename { get; set; } = string.Empty;
 }
 
 public class Lastbroadcast
 {
-	public string id { get; set; }
-	public Game game { get; set; }
-	public string __typename { get; set; }
+	public string id { get; set; } = string.Empty;
+	public Game game { get; set; } = new();
+	public string __typename { get; set; } = string.Empty;
 }
 
 public class Game
 {
-	public string id { get; set; }
-	public string name { get; set; }
-	public string __typename { get; set; }
+	public string id { get; set; } = string.Empty;
+	public string name { get; set; } = string.Empty;
+	public string __typename { get; set; } = string.Empty;
 }
 
 public class Broadcastsettings
 {
-	public string id { get; set; }
-	public string language { get; set; }
-	public string __typename { get; set; }
+	public string id { get; set; } = string.Empty;
+	public string language { get; set; } = string.Empty;
+	public string __typename { get; set; } = string.Empty;
 }
 
 public class Clip
 {
-	public string id { get; set; }
-	public Playbackaccesstoken playbackAccessToken { get; set; }
-	public Videoquality[] videoQualities { get; set; }
-	public string __typename { get; set; }
-	public object videoOffsetSeconds { get; set; }
+	public string id { get; set; } = string.Empty;
+	public Playbackaccesstoken playbackAccessToken { get; set; } = new();
+	public Videoquality[] videoQualities { get; set; } = new Videoquality[] { };
+	public string __typename { get; set; } = string.Empty;
+	public object videoOffsetSeconds { get; set; } = new();
 	public int durationSeconds { get; set; }
-	public object video { get; set; }
+	public object video { get; set; } = new();
 }
 
 public class Playbackaccesstoken
 {
-	public string signature { get; set; }
-	public string value { get; set; }
-	public string __typename { get; set; }
+	public string signature { get; set; } = string.Empty;
+	public string value { get; set; } = string.Empty;
+	public string __typename { get; set; } = string.Empty;
 }
 
 public class Videoquality
 {
 	public int frameRate { get; set; }
-	public string quality { get; set; }
-	public string sourceURL { get; set; }
-	public string __typename { get; set; }
+	public string quality { get; set; } = string.Empty;
+	public string sourceURL { get; set; } = string.Empty;
+	public string __typename { get; set; } = string.Empty;
 }
 
 public class Extensions
 {
 	public int durationMilliseconds { get; set; }
-	public string operationName { get; set; }
-	public string requestID { get; set; }
+	public string operationName { get; set; } = string.Empty;
+	public string requestID { get; set; } = string.Empty;
 }
 
 }
